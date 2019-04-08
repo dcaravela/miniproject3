@@ -1,0 +1,11 @@
+---
+title: "miniproject3"
+author: "Neyda Carrillo"
+date: "4/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
