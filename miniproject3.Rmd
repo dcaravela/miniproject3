@@ -16,9 +16,9 @@ library(sf)
 ```
 
 ```{r}
-
 macleish_trails <- macleish_layers %>%
-  pluck("trails")
+  pluck("trails") %>%
+  mutate(length = st_length(geometry))
 macleish_trails
 
 macleish_elevation <- macleish_layers %>%
@@ -26,7 +26,13 @@ macleish_elevation <- macleish_layers %>%
 macleish_elevation
 
 trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
-  arrange(desc(ELEV_FT))
+  group_by(name) %>%
+  mutate(min_elev = min(ELEV_FT), 
+          max_elev = max(ELEV_FT), 
+          change_elev = max_elev - min_elev,
+          length_miles = length / 1609.344,
+         difficulty_rating = sqrt(change_elev * 2 * length_miles)) %>%
+  na.omit()
 trail_elevations
 ```
 
