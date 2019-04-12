@@ -12,4 +12,31 @@ knitr::opts_chunk$set(echo = TRUE)
 library(macleish)
 library(tidyverse)
 library(sf)
+library(leaflet)
+```
+
+```{r}
+macleish_layers$trails
+macleish_layers$contours_3m
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = macleish_layers[["boundary"]], 
+              weight = 1, fillOpacity = 0.1) %>%
+  addPolylines(data = macleish_layers[["trails"]], 
+               weight = 1, color = "brown",
+               popup = ~ name) %>%
+  addPolylines(data = macleish_layers[["streams"]], 
+               weight = 2)
+```
+
+
+```{r}
+trails <- macleish_layers %>%
+  pluck("trails") %>%
+  mutate(computed_length = st_length(geometry),
+         starting_point = )
+
+change_in_elv <- macleish_layers %>%
+  pluck("contours_3m")
 ```
