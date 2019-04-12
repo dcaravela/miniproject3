@@ -1,6 +1,6 @@
 ---
 title: "Miniproject3"
-author: "Dianne Caravela"
+author: "Dianne Caravela, Neyda Carrillo"
 date: "4/8/2019"
 output:   
   html_document:
@@ -10,6 +10,23 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(macleish)
+library(leaflet)
 library(tidyverse)
 library(sf)
 ```
+
+```{r}
+
+macleish_trails <- macleish_layers %>%
+  pluck("trails")
+macleish_trails
+
+macleish_elevation <- macleish_layers %>%
+  pluck("contours_3m")
+macleish_elevation
+
+trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
+  arrange(desc(ELEV_FT))
+trail_elevations
+```
+
