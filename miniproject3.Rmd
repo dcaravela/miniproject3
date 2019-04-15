@@ -1,7 +1,7 @@
 ---
 title: "Miniproject3"
 author: "Dianne Caravela, Neyda Carrillo"
-date: "4/8/2019"
+date: "4/16/2019"
 output:   
   html_document:
     code_folding: hide
@@ -13,18 +13,20 @@ library(macleish)
 library(leaflet)
 library(tidyverse)
 library(sf)
+library(rgdal)
 ```
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 macleish_trails <- macleish_layers %>%
   pluck("trails") %>%
   mutate(length = st_length(geometry))
-macleish_trails
 
 macleish_elevation <- macleish_layers %>%
   pluck("contours_3m")
-macleish_elevation
 
+```
+
+```{r, warning=FALSE, message=FALSE}
 trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
   group_by(name) %>%
   mutate(min_elev = min(ELEV_FT), 
@@ -35,4 +37,18 @@ trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
   na.omit()
 trail_elevations
 ```
+
+```{r, message=FALSE}
+rating <- colorNumeric(
+  palette = "inferno",  
+  domain = trail_elevations$difficulty_rating)
+
+trail_map <- leaflet(data = trail_elevations) %>%
+  addTiles() %>%
+  addPolylines(color = ~rating(difficulty_rating)) %>%
+  addLegend("topright", pal = rating, values = ~difficulty_rating, title = "Difficulty Rating", opacity = 1)
+trail_map
+```
+
+
 
