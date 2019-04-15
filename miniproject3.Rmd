@@ -14,6 +14,7 @@ library(leaflet)
 library(tidyverse)
 library(sf)
 library(rgdal)
+library(plotly)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -33,7 +34,10 @@ trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
           max_elev = max(ELEV_FT), 
           change_elev = max_elev - min_elev,
           length_miles = length / 1609.344,
-         difficulty_rating = sqrt(change_elev * 2 * length_miles)) %>%
+         difficulty_num = sqrt(change_elev * 2 * length_miles),
+         difficulty_rating = case_when(difficulty_num <= 4 ~ "easy",
+                                       difficulty_num >= 10 ~ "difficult",
+                                       TRUE ~ "medium"))  %>%
   na.omit()
 trail_elevations
 ```
@@ -41,14 +45,13 @@ trail_elevations
 ```{r, message=FALSE}
 rating <- colorNumeric(
   palette = "inferno",  
-  domain = trail_elevations$difficulty_rating)
+  domain = trail_elevations$difficulty_num)
 
 trail_map <- leaflet(data = trail_elevations) %>%
   addTiles() %>%
-  addPolylines(color = ~rating(difficulty_rating)) %>%
-  addLegend("topright", pal = rating, values = ~difficulty_rating, title = "Difficulty Rating", opacity = 1)
+  addPolylines(color = ~rating(difficulty_num)) %>%
+  addLegend("bottomleft", pal = rating, values = ~difficulty_num, title = "Difficulty Rating", opacity = 1)
+
 trail_map
 ```
-
-
 
