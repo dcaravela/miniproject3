@@ -17,6 +17,7 @@ library(rgdal)
 library(plotly)
 ```
 
+### Getting trail and elevation data
 ```{r, warning=FALSE, message=FALSE}
 macleish_trails <- macleish_layers %>%
   pluck("trails") %>%
@@ -27,14 +28,23 @@ macleish_elevation <- macleish_layers %>%
 
 ```
 
+### Joins trails and elevation data, creates new variables
 ```{r, warning=FALSE, message=FALSE}
 trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
   group_by(name) %>%
-  mutate(min_elev = min(ELEV_FT), 
+  mutate(
+    #finding change in elevation for each segment
+    min_elev = min(ELEV_FT), 
           max_elev = max(ELEV_FT), 
-          change_elev = max_elev - min_elev,
+          change_elev = max_elev - min_elev, 
+    
+    #convert to miles
           length_miles = length / 1609.344,
+    
+    #numeric difficulty rating based on Shenandoah's Hiking Difficulty
          difficulty_num = sqrt(change_elev * 2 * length_miles),
+    
+    #Rating of trail relative to the other Macleish trails
          difficulty_rating = case_when(difficulty_num <= 4 ~ "easy",
                                        difficulty_num >= 10 ~ "difficult",
                                        TRUE ~ "medium"))  %>%
@@ -42,14 +52,30 @@ trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
 trail_elevations
 ```
 
+### Creates leaflet graph
 ```{r, message=FALSE}
+#function to map difficulty to the color palatte
 rating <- colorNumeric(
   palette = "inferno",  
   domain = trail_elevations$difficulty_num)
 
+#maps spacial data with leaflet
 trail_map <- leaflet(data = trail_elevations) %>%
   addTiles() %>%
+  
+  #adds individual markers for each trail, showing trail name and difficulty info
+  addMarkers(lng = -72.68025, lat = 42.45659168, popup = "East Loop Trail Medium (9.0)") %>%
+  addMarkers(lng = -72.68037, lat = 42.454, popup = "Poplar Hill Road Difficult (11.0)") %>%
+  addMarkers(lng = -72.679, lat = 42.4513, popup = "East Loop Trail Difficult (10.4)") %>%
+  addMarkers(lng = -72.6795, lat = 42.4489, popup = "Entry Trail Easy (2.2)") %>%
+  addMarkers(lng = -72.68085, lat = 42.4482, popup = "Poplar Hill Road Medium (4.4)") %>%
   addPolylines(color = ~rating(difficulty_num)) %>%
+  addMarkers(lng = -72.6818, lat = 42.4490, popup = "West Loop Trail Medium (5.7)") %>%
+  addMarkers(lng = -72.6834, lat = 42.4525, popup = "Porcupine Trail Medium (9.2)") %>%
+  addMarkers(lng = -72.6837, lat = 42.4490, popup = "Vernal Pool Loop Trail Easy (3.0)") %>%
+  addMarkers(lng = -72.6840, lat = 42.4555, popup = "West Loop Trail DIfficult (12.9)") %>%
+  
+  #adds legend at bottom of screen
   addLegend("bottomleft", pal = rating, values = ~difficulty_num, title = "Difficulty Rating", opacity = 1)
 
 trail_map
