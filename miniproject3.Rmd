@@ -6,7 +6,6 @@ output:
   html_document:
     code_folding: hide
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(macleish)
@@ -16,6 +15,16 @@ library(sf)
 library(rgdal)
 library(plotly)
 ```
+
+# Catchy, engaging title
+
+500 to 800 words including relevant external information in the analysis and reporting at least one actionable recommendation (what should Smith DO with your findings?)
+
+a short discussion on the resources necessary to implement your recommendation:
+what will it cost?
+how long will it take?
+are there any concerns about environmental impact?
+do you see any major roadblocks?
 
 ### Getting trail and elevation data
 ```{r, warning=FALSE, message=FALSE}
@@ -29,7 +38,7 @@ macleish_elevation <- macleish_layers %>%
 ```
 
 ### Joins trails and elevation data, creates new variables
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, echo = TRUE}
 trail_elevations <- st_join(macleish_trails, macleish_elevation) %>%
   group_by(name) %>%
   mutate(
