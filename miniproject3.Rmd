@@ -16,7 +16,7 @@ library(rgdal)
 library(plotly)
 ```
 
-# Catchy, engaging title
+# Wellness at Macleish: It’s in Your Hands (and Feet)
 
 500 to 800 words including relevant external information in the analysis and reporting at least one actionable recommendation (what should Smith DO with your findings?)
 
