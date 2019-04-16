@@ -26,6 +26,8 @@ how long will it take?
 are there any concerns about environmental impact?
 do you see any major roadblocks?
 
+Link to GitHub^[https://github.com/dcaravela/miniproject3]
+
 ### Getting trail and elevation data
 ```{r, warning=FALSE, message=FALSE}
 macleish_trails <- macleish_layers %>%
